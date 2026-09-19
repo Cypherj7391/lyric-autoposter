@@ -1,0 +1,33 @@
+name: Automatic Lyric Video Bot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v4
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Run lyric bot
+        env:
+          YOUTUBE_TOKEN_JSON: ${{ secrets.YOUTUBE_TOKEN_JSON }}
+          YOUTUBE_PRIVACY: private
+        run: python bot.py
